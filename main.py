@@ -4,11 +4,13 @@ from io import BytesIO
 import matplotlib.pyplot as plt
 import os
 import base64
+from timer_log import timed
 
 app = Flask(__name__)
 
 @app.route('/', methods=["GET"])
-def hello_world():
+@timed
+def google_trend():
     pytrends = TrendReq(hl='en-US', tz=360)
     # set the keyword & timeframe
     pytrends.build_payload(["Taylor Swift"], timeframe="all")
@@ -31,3 +33,6 @@ def hello_world():
     plt.clf()
 
     return '<img src="data:image/png;base64,{}">'.format(chart)
+
+
+
