@@ -1,0 +1,7 @@
+Flask
+requests
+pandas
+pytrends
+requires.io
+pybase64
+matplotlib
