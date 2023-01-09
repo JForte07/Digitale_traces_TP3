@@ -4,7 +4,8 @@ from io import BytesIO
 import matplotlib.pyplot as plt
 import os
 import base64
-from timer_log import timed
+import numpy as np
+from timer_log import timed , count_dict, count_function,run_100times
 
 app = Flask(__name__)
 
@@ -34,5 +35,47 @@ def google_trend():
 
     return '<img src="data:image/png;base64,{}">'.format(chart)
 
+@app.route('/countDict', methods=["GET"])
+@timed
+def countDict():
+  method_dict = count_dict('t8.shakespeare.txt')
+  return method_dict
+
+@app.route('/countFunc', methods=["GET"])
+@timed
+def countFunc():
+  method_func = count_function('t8.shakespeare.txt')
+  return method_func
+
+
+@app.route('/experiment', methods=["GET"])
+#@timed
+def experiment():
+  dictionary , function = run_100times()
+
+  dictionnary_mean = str("dictionnary mean : ",np.mean(dictionary))
+  counter_mean= str("Function mean : ",np.mean(function))
+
+  dictionnary_var = str("dictionnary variance : ",np.std(dictionary))
+  counter_var= str("Function variance : ",np.std(function))
+
+  x = np.linspace(0,100, 100)
+
+  plt.plot(x, dictionary)
+  plt.plot(x, function)
+
+  plt.legend(["dictionnary", "fonction counter"], loc ="upper right")
+  plt.xlabel('n times ')
+  plt.ylabel('times')
+
+
+  B = BytesIO()
+  plt.savefig(B, format='png')
+  B.seek(0)
+
+  chart = base64.b64encode(B.getvalue()).decode()
+  plt.clf()
+
+  return dictionnary_mean,counter_mean,dictionnary_var,counter_var,'<img src="data:image/png;base64,{}">'.format(chart)
 
 
